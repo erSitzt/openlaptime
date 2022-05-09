@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VARIANT: 16-bullseye
+
+    volumes:
+      - ..:/workspace:cached
+      
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+    ports:
+      - "0.0.0.0:3000:3000"
+    depends_on:
+      - "db"
+
+
+
+  db:
+    user: root
+    image: mcr.microsoft.com/mssql/server:latest
+    restart: unless-stopped
+    volumes:
+      - mssql-data:/var/opt/mssql/data
+    environment:
+        ACCEPT_EULA: Y
+        SA_PASSWORD: P@ssword123
+    ports:
+        - 6000:1433
+
+
+volumes:
+  mssql-data:
